@@ -39,6 +39,7 @@ class url_mapping(Base):
         Session = sessionmaker(bind=engine)
         session = Session()
         new_url = url_mapping(url_short=short, url_long=long)
+
         session.delete()
         session.commit()
         session.close()
