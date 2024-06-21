@@ -1,15 +1,29 @@
 from flask import Flask, Blueprint, request, abort, redirect, jsonify
-from url_shortener.adapters import url_mapping
+from url_shortener.adapters import UrlMappingModel, url_mapping
 from flask_swagger_ui import get_swaggerui_blueprint
+from flask_restx import Namespace, Resource, Api
 import json
 
-url_obj = url_mapping()
 bp = Blueprint("url_shortener", __name__)
 url_obj = url_mapping()
+api_namespace = Namespace(path='/', name='Url mapping', description="Shorten URL API")
+url_obj_mapping = UrlMappingModel(api_namespace)
+
+api = Api(
+            title="URL Shortener API",
+            version="1.0",
+            description="URL Shortener API",
+            doc="/doc"
+        )
+api.add_namespace(api_namespace)
 
 
 def create_app():
     app = Flask(__name__)
+    app.config["RESTX_MASK_SWAGGER"] = False
+    app.register_blueprint(bp)
+    api.init_app(app)
+    """
     SWAGGER_URL = '/swagger1'
     API_URL = '/swagger1.json'
     swaggerui_blueprint = get_swaggerui_blueprint(
@@ -20,20 +34,30 @@ def create_app():
         }
         )
     app.register_blueprint(bp)
-    app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
+    """
     return app
 
+@api_namespace.route("/add")
+class urlResource(Resource):
+    @api_namespace.expect(url_obj_mapping.append_url_expected_payload())
+    def post(self):
+        "Create a translatable address"
+        objeto = request.json
+        print(objeto)
+        return {"data": 'Creación realizada', "message": "OK"}, 200
+#@bp.route("/", methods=['GET'])
+#@bp.route("/<path:path>")
+#def home(path=''):
 
 @bp.route("/add", methods=['POST'])
 def create():
     "Create a translatable address"
     if request.method == 'POST':
         objeto = request.json
-        print(objeto)
+        print('Hola')
         url_obj.add(objeto['url_short'], objeto['url_long'])
     return 'Creación realizada'
-
-
+""""
 @bp.route("/get", methods=['GET'])
 def get():
     if request.method == 'GET':
@@ -45,10 +69,10 @@ def get():
 @bp.route("/", methods=['GET'])
 @bp.route("/<path:path>")
 def home(path=''):
-    if len(path) == 0:
-        print(request.url_root + 'swagger1/')
-        resulta = redirect(request.url_root + 'swagger1/')
-        return resulta
+    #if len(path) == 0:
+    #    print(request.url_root + 'swagger1/')
+    #    resulta = redirect(request.url_root + 'swagger1/')
+    #    return resulta
     long_url = request.url_root + path
     result = url_obj.get(long_url)
     if result is None:
@@ -61,6 +85,7 @@ def home(path=''):
 
 
 @bp.route('/swagger1.json')
-def swagger(path=None):
-    with open('swagger1.json', 'r') as f:
-        return jsonify(json.load(f))
+#def swagger(path=None):
+#    with open('swagger1.json', 'r') as f:
+#        return jsonify(json.load(f))
+"""
