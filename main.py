@@ -1,4 +1,4 @@
-from url_shortener.adapters import url_mapping
+from url_shortener.adapters import url_mapping, logger
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
@@ -15,7 +15,11 @@ class UrlMap(BaseModel):
 def create(url_map: UrlMap):
     """Create a translatable address"""
     url_obj = url_mapping()
-    url_obj.add(url_map.url_short, url_map.url_long)
+    try:
+        url_obj.add(url_map.url_short, url_map.url_long)
+    except Exception as excep:
+        logger.error(excep.args)
+        raise HTTPException(status_code=500, detail="{}".format(excep.args))
     return {"message": "Url mapping created"}
 
 
@@ -42,6 +46,9 @@ def catch_all(request: Request, full_path: str):
 @app.delete("/delete")
 def delete_url(url_short: str):
     url_obj = url_mapping()
-    url_obj.remove(url_short)
+    try:
+        url_obj.remove(url_short)
+    except Exception as exp:
+        raise HTTPException(status_code=500, detail="{}".format(url_obj.remove(url_short)))
     return {"message": "Record has been deleted"}
 

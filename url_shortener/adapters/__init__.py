@@ -1,7 +1,10 @@
 from sqlalchemy import create_engine, Column, Integer, String, DateTime, update
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy import exc
 import sqlite3
+import logging
+logger = logging.getLogger(__name__)
 
 database_url = 'sqlite:///url_mappingdb.db'
 # Create an engine to connect to a SQLite database
@@ -21,11 +24,16 @@ class url_mapping(Base):
         Base.metadata.create_all(engine)
 
     def add(self, short, long):
+        exception_text = ''
         Session = sessionmaker(bind=engine)
         session = Session()
-        new_url = url_mapping(url_short=short, url_long=long, url_count=0)
-        session.add(new_url)
-        session.commit()
+        try:
+            new_url = url_mapping(url_short=short, url_long=long, url_count=0)
+            session.add(new_url)
+            session.commit()
+        except Exception as exp:
+            session.rollback()
+            raise ValueError(exp.args)
         session.close()
 
     def get(self, short):
@@ -39,9 +47,14 @@ class url_mapping(Base):
         Session = sessionmaker(bind=engine)
         session = Session()
         url_obj = session.query(url_mapping).get(short_url)
-        session.delete(url_obj)
-        session.commit()
+        try:
+            session.delete(url_obj)
+            session.commit()
+        except Exception as exp:
+            session.rollback()
+            raise ValueError(exp.args)
         session.close()
+
 
     def update_count(self, short):
         Session = sessionmaker(bind=engine)
