@@ -1,9 +1,9 @@
 from flask import Flask, Blueprint, request, abort, redirect, jsonify
-from url_shortener.adapters import UrlMappingModel, url_mapping
+from url_shortener.adapters import url_mapping
 from flask_swagger_ui import get_swaggerui_blueprint
 from flask_restx import Namespace, Resource, Api
 import json
-
+"""""
 bp = Blueprint("url_shortener", __name__)
 url_obj = url_mapping()
 api_namespace = Namespace(path='/', name='Url mapping', description="Shorten URL API")
@@ -23,7 +23,6 @@ def create_app():
     app.config["RESTX_MASK_SWAGGER"] = False
     app.register_blueprint(bp)
     api.init_app(app)
-    """
     SWAGGER_URL = '/swagger1'
     API_URL = '/swagger1.json'
     swaggerui_blueprint = get_swaggerui_blueprint(
@@ -34,7 +33,7 @@ def create_app():
         }
         )
     app.register_blueprint(bp)
-    """
+
     return app
 
 @api_namespace.route("/add")
@@ -57,7 +56,6 @@ def create():
         print('Hola')
         url_obj.add(objeto['url_short'], objeto['url_long'])
     return 'Creación realizada'
-""""
 @bp.route("/get", methods=['GET'])
 def get():
     if request.method == 'GET':
