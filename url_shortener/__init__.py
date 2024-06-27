@@ -1,7 +1,4 @@
 from flask import Flask, Blueprint, request, abort, redirect, jsonify
-from url_shortener.adapters import url_mapping
-from flask_swagger_ui import get_swaggerui_blueprint
-from flask_restx import Namespace, Resource, Api
 import json
 """""
 bp = Blueprint("url_shortener", __name__)
