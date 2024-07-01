@@ -4,12 +4,19 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy import exc
 import sqlite3
 import logging
+from datetime import datetime
 logger = logging.getLogger(__name__)
-
 database_url = 'sqlite:///url_mappingdb.db'
 # Create an engine to connect to a SQLite database
 engine = create_engine(database_url)
 Base = declarative_base()
+
+
+def audit_log_transaction(touristId: str, message=""):
+    with open("audit_log.txt", mode="a") as logfile:
+        content = "{} at {}".format(message, datetime.now())
+        logfile.write(content)
+
 
 class url_mapping(Base):
     __tablename__ = 'url_mapping'

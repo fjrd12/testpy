@@ -1,0 +1,4 @@
+method: DELETE, query param: url_short=http%3A%2F%2F127.0.0.1%3A8000%2Ftest_case, path params: {} received at 2024-07-01 17:05:17.420622 
+method: POST, query param: , path params: {} received at 2024-07-01 17:05:17.430914 
+method: GET, query param: http%3A%2F%2F127.0.0.1%3A8000%2Ftest_case=, path params: {} received at 2024-07-01 17:05:17.439966 
+method: GET, query param: , path params: {} received at 2024-07-01 17:05:17.441296 
